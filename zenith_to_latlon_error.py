@@ -5,15 +5,15 @@ import astropy
 from astropy.time import Time
 from astropy.coordinates import Angle
 
-ts = load.timescale()
-t = ts.utc(2022, 10, 11, 20, 5, 15)
+def get_latlon(year, month, day, hour, minute, second, ra_angle, dec_angle):
+    ts = load.timescale()
+    t = ts.utc(year, month, day, hour, minute, second)
 
-earth = 399 # code for earth for something
-ra_hours = Angle('16h05m15s').hour
-dec_degrees = Angle('37.228963d').degree # example based on astrometry output
-pleiades = position_of_radec(ra_hours, dec_degrees, t=t, center=earth)
-subpoint = wgs84.subpoint(pleiades)
+    earth = 399 # code for earth
+    ra_hours = ra_angle.hour
+    dec_degrees = dec_angle.degree # example based on astrometry output
+    pleiades = position_of_radec(ra_hours, dec_degrees, t=t, center=earth)
+    subpoint = wgs84.subpoint(pleiades)
+    return subpoint.latitude, subpoint.longitude
 
-
-print('Latitude:', subpoint.latitude)
-print('Longitude:', subpoint.longitude)
+print(get_latlon(2022, 10, 11, 20, 5, 15, Angle('16h05m15s'), Angle('37.228963d')))
