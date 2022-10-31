@@ -12,9 +12,11 @@ from skyfield.api import load
 # --- Begin adapted section --------------------------------------------------------------
 
 def residuals_fn(points, dist):
-    def fn(location):
+    def fn(args):
         #return np.array([(dist(p, location).km - r)*(r*r) for (p, r) in points])
-        return np.array([(dist(p, location) - r) for (p, r) in points])
+        lat, lon, bias = args
+        location = (lat, lon)
+        return np.array([(dist(p, location) - r - bias) for (p, r) in points])
     return fn
 
 def multilateration(points):
@@ -22,7 +24,18 @@ def multilateration(points):
 
     ps = [x[0] for x in points]
     x0 = np.mean(np.array(ps), axis=0)
-    return least_squares(residuals_fn(points, dist), x0)
+    x0 = np.append(x0, 0)  # Add 0 bias
+
+    bias_bounds = Angle('5d').radian
+
+    return least_squares(
+        residuals_fn(points, dist), 
+        x0, 
+        bounds=(
+            [-np.inf, -np.inf, -bias_bounds],
+            [+np.inf, +np.inf, +bias_bounds],
+        ),
+    )
 
 # --- End adapted section ----------------------------------------------------------------
 
@@ -35,7 +48,7 @@ def angular_dist(latlon1, latlon2):
 
 if __name__ == "__main__":
     # Params
-    alt_bias = Angle('0m')
+    alt_bias = Angle('3d')
 
     # Actual
     actual_latitude = Angle('+37d 10m 44.76s')
@@ -73,12 +86,16 @@ if __name__ == "__main__":
     ]
 
     before = time.time()
-    result_lat_rads, result_lon_rads = multilateration(points).x
+    result_lat_rads, result_lon_rads, result_alt_bias_rads = multilateration(points).x
     print(f"Took {time.time() - before} sec")
+    
     result_lat = Angle(result_lat_rads, u.radian)
     result_lon = Angle(result_lon_rads, u.radian)
+    result_alt_bias = Angle(result_alt_bias_rads, u.radian)
+
     print(f"Latitude: {result_lat.to_string(unit=u.degree)}")
     print(f"Longitude: {result_lon.to_string(unit=u.degree)}")
+    print(f"Bias: {result_alt_bias.to_string(unit=u.degree)}")
 
     error_angular = angular_dist((result_lat.radian, result_lon.radian), (actual_latitude.radian, actual_longitude.radian))
     error_angular = Angle(error_angular, u.radian)
