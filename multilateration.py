@@ -26,7 +26,7 @@ def multilateration(points):
     x0 = np.mean(np.array(ps), axis=0)
     x0 = np.append(x0, 0)  # Add 0 bias
 
-    bias_bounds = Angle('5d').radian
+    bias_bounds = Angle('50d').radian
 
     return least_squares(
         residuals_fn(points, dist), 
