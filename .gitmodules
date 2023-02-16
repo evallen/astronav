@@ -1,0 +1,3 @@
+[submodule "Canomate"]
+	path = Canomate
+	url = https://github.com/horshack-dpreview/Canomate.git
