@@ -1,0 +1,5 @@
+https://dphacks.com/how-to-canon-camera-control-api-ccapi/
+https://github.com/camerahacks/canon-api
+https://www.testcams.com/canomate/
+https://github.com/evallen/astronav
+https://github.com/horshack-dpreview/Canomate
