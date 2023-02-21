@@ -1,0 +1,10 @@
+PrintCameraInfo
+PrintShootingSettings
+PrintStillImageQuality listavailable=yes
+SetStillImageQuality rawquality=raw jpegquality=none
+
+AssertCameraSettings moviemode=off modedial=m 
+SetAperture aperture=f5.6
+SetShutterSpeed shutterspeed=1/200
+SetIso iso=400
+TakePhoto
