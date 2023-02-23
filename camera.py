@@ -6,11 +6,12 @@ import os
 import serial #python -m pip install pyserial
 import time
 import datetime
-
+import threading
+import datetime
 
 class camera:
 	def __init__(self):
-		self.ccapi = {
+		self.ccapi = {T
 			"URL":	"http://192.168.1.2:8080/ccapi",
 			"IP":	"192.168.1.2",			#ccapi network ip number
 			"PORT":	"8080",					#ccapi network port number
@@ -19,6 +20,7 @@ class camera:
 		}
 		self.debuglevel = ["normal","verbose","debug"]	#list for debug levels in logging
 		self.outputpath = os.path.dirname(__file__)	#gets path to python file
+		self.mutex = Lock()
 	pass
 
 	def take(self, opfile="canomate-api-scripts/takecommand.txt", logging=0, debug=False):
@@ -29,7 +31,23 @@ class camera:
 			"--outputdir", f"\"{self.outputpath}\\Images\"",
 			"--logginglevel", f"{self.debuglevel[logging]}"
         ]
-		self.request(args, debug)
+		#defines threads for camera take and for sensor gathering
+		camerathread = threading.Thread(target=self.request, args=(args, debug))
+		sensorthread = threading.Thread(target=self.duino, args=())
+
+		#This creates a folder with the datetime for separating files
+		foldername = datetime.datetime.now().strftime("%I-%M%p-%B-%d-%Y")
+		subprocess.Popen([f"mkdir {foldername}"], shell=True)
+  
+		# Starts threads
+		sensorthread.start()
+		sleep(2)				#Sleep for 2 to allow sensor to start before camera image takes
+		camerathread.start()
+  
+		# Joins threads
+		sensorthread.join()
+		camerathread.join()
+		
 
 	def help(self, debug=False):
 		args = ["--help"]
@@ -53,20 +71,21 @@ class camera:
        
        
     #modify this to run constantly polling and storing arduino data, but use 
-    def duino(self, file='output.txt'):
+    def duino(self, file='output.txt', iter=50, debug=False):
 		ser = serial.Serial('COM3', 9800, timeout=1)
 		time.sleep(2)
+		pyfile = open(file, 'a')
 
-		for i in range(50):
+		for i in range(iter):
 			line = ser.readline()
 			if line:
 				string = line.decode()
 				timestamp = str(time.time())
 				num = (string)
-				#print("val", num)
-				#print("time:", timestamp)
-				with open(file, 'a') as pyfile:
-					pyfile.write(num + ' ' + timestamp + '\n')
+				if debug:
+					print("val", num, end='')
+					print("\ttime:", timestamp)
+				pyfile.write(num + ' ' + timestamp + '\n')
 		ser.close()
 
 
