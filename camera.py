@@ -47,7 +47,6 @@ class camera:
 		# Joins threads
 		sensorthread.join()
 		camerathread.join()
-		
 
 	def help(self, debug=False):
 		args = ["--help"]
@@ -72,6 +71,8 @@ class camera:
        
     #modify this to run constantly polling and storing arduino data, but use 
     def duino(self, file='output.txt', iter=50, debug=False):
+        # port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
+        # Add compatibility for linux and windows
 		ser = serial.Serial('COM3', 9800, timeout=1)
 		time.sleep(2)
 		pyfile = open(file, 'a')
