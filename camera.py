@@ -52,20 +52,21 @@ class camera:
 			"--outputdir", f"{dumpfolder}",
 			"--logginglevel", f"{self.debuglevel[logging]}"
         ]
+
+		return self.request(args=args, debug=debug)
+
 		#defines threads for camera take and for sensor gathering
-		camerathread = threading.Thread(target=self.request, args=(args, debug))
+		#camerathread = threading.Thread(target=self.request, args=(args, debug))
 		#sensorthread = threading.Thread(target=self.duino, args=())
 
-		
-  
 		# Starts threads
 		#sensorthread.start()
-		time.sleep(2)				#Sleep for 2 to allow sensor to start before camera image takes
-		camerathread.start()
+		#time.sleep(2)				#Sleep for 2 to allow sensor to start before camera image takes
+		#camerathread.start()
   
 		# Joins threads
 		#sensorthread.join()
-		camerathread.join()
+		#camerathread.join()
 
 	def help(self, debug=False):
 		args = ["--help"]
