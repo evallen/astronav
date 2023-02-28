@@ -24,21 +24,39 @@ class camera:
 		self.mutex = threading.Lock()
 		pass
 
-	def take(self, opfile="takecommand.txt", logging=0, debug=False):
+
+	# outputdir would not have \ at the beginning
+	# TODO add in catches for \
+	def take(self, opfile="takecommand.txt", logging=0, debug=False, outputdir = ""):
+		# TODO: Flush the images taken before the run using a for loop
+		"""
+		done = False
+		while (!done) {
+			# Sample Output
+			# ** Download Failed ** "[Errno 2] No such file or directory: 'G:\\My Drive\\School(VT)\\Engineering\\4805-4806 Senior Design\\astronav\\Runs\\12-48PM-February-28-2023\\IMG_3539.CR3'"
+			lines = self.take(opfile="download.txt", debug=debug)
+			if "some line that means nothing to grab" in lines:
+				done = True
+		}
+		"""
+
+		#This creates a folder with the datetime for separating
+		foldername = datetime.datetime.now().strftime("%I-%M%p-%B-%d-%Y")
+		subprocess.Popen(["mkdir", f"Runs\\{outputdir}{foldername}"], shell=True)
+		
+		dumpfolder = f"{self.outputpath}\\Runs\\{outputdir}{foldername}"
 		args = [
 			"--ipaddress", f"{self.ccapi['IP']}", 
 			"--port", f"{self.ccapi['PORT']}",
 			"--opfile", opfile,
-			"--outputdir", f"{self.outputpath}\\Images",
+			"--outputdir", f"{dumpfolder}",
 			"--logginglevel", f"{self.debuglevel[logging]}"
         ]
 		#defines threads for camera take and for sensor gathering
 		camerathread = threading.Thread(target=self.request, args=(args, debug))
 		#sensorthread = threading.Thread(target=self.duino, args=())
 
-		#This creates a folder with the datetime for separating files
-		#foldername = datetime.datetime.now().strftime("%I-%M%p-%B-%d-%Y")
-		#subprocess.Popen(["mkdir", f"{foldername}"], shell=True)
+		
   
 		# Starts threads
 		#sensorthread.start()
@@ -71,14 +89,18 @@ class camera:
 			if "DownloadNewFilesPolled" in line:
 				#Sample output ['GET', '/ccapi/ver100/contents/sd/117_PANA/IMG_3535.CR3', 'Downloading', '/ccapi/ver100/contents/sd/117_PANA/IMG_3535.CR3...', 'DownloadNewFilesPolled:', 'IMG_3535.CR3', 'stored', 'at', 'G:\\My', 'Drive\\School(VT)\\Engineering\\4805-4806', 'Senior', 'Design\\astronav\\Images\\IMG_3535.CR3', '[download', 'time', '=', '11.34', '(s)]']
 				splitline = line.split()
-				print("~~~")
-				print(splitline)
-				print("~~~")
-				if len(splitline) > 5:
+				if debug:
+					print("~~~")
+					print(splitline)
+					print("~~~")
+				if len(splitline) > 6:
 					imgname = splitline[5]
-					imgpath = "\"" + " ".join(splitline[8:11]) + "\""
+					imgpath = "\"" + " ".join(splitline[8:-5]) + "\""
 					print(f"Filename: {imgname}\t{imgpath}")
-       
+					return imgname, imgpath
+				if "No" in splitline:
+					print(" ".join(splitline[1:4] + " Capture"))
+		return None, None	#Check this return type in 
        
     # 	#modify this to run constantly polling and storing arduino data, but use 
     # def duino(self, file='output.txt', iter=50, debug=False):
@@ -102,7 +124,7 @@ class camera:
 
 
 if __name__ == '__main__':
-	debug = True#False
+	debug = True
 	cam = camera()
 	if "down" in str(sys.argv):
 		cam.take(opfile="download.txt", debug=debug)
