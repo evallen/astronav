@@ -1,1 +1,3 @@
 https://www.testcams.com/canomate/
+astap: https://www.hnsky.org/astap.htm
+v17 database: https://sourceforge.net/projects/astap-program/files/star_databases/v17_star_database_mag17_colour_astap.exe/download
