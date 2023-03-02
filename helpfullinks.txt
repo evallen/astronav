@@ -1,0 +1,9 @@
+https://www.testcams.com/canomate/
+astap: https://www.hnsky.org/astap.htm
+v17 database: https://sourceforge.net/projects/astap-program/files/star_databases/v17_star_database_mag17_colour_astap.exe/download
+https://dphacks.com/how-to-canon-camera-control-api-ccapi/
+https://github.com/camerahacks/canon-api
+https://www.testcams.com/canomate/
+https://github.com/evallen/astronav
+https://github.com/horshack-dpreview/Canomate
+https://www.testcams.com/canomate/
