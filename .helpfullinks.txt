@@ -3,3 +3,4 @@ https://github.com/camerahacks/canon-api
 https://www.testcams.com/canomate/
 https://github.com/evallen/astronav
 https://github.com/horshack-dpreview/Canomate
+https://www.testcams.com/canomate/
