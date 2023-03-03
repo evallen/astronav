@@ -73,17 +73,6 @@ class astap:
         :param date_ra_dec: array of date, ra, dec
         :return: none
         """
-        # if "F" in date_ra_dec:
-        #     return 1
-        # if len(filename.split("\\")) > 2 or len(filename.split("/")) > 2:
-            # filename = "".join(filename.split(".")[:-1]) + ".csv"   
-            # with open(rf'{filename}', 'rt', newline='') as file:
-            #     writer = csv.writer(file)
-            #     writer.writerow(['Image', 'Dec', 'RA ', 'Date', 'Time'])
-            #     writer.writerow([Path(filename).stem,  date_ra_dec[1], date_ra_dec[2], date_ra_dec[0].date(), date_ra_dec[0].time()])
-            # print(filename)
-            # filename = filename.split("\\")[-1].split(".")[0] + ".csv"
-            # print(filename)
         filename = os.path.join("\\".join(filename.split("\\")[:-1]), "".join(filename.split("\\")[-1].split(".")[0]) + ".csv") # HAHA did you KNOW DIRECTORIES can have EXTENSIONS? I DIDNT LMAO
         
         touch = ["type", "nul", ">", rf"{filename}" ]   #touch command for windows. TODO: add a way to determine OS
