@@ -41,7 +41,11 @@ class camera:
 		"""
 
 		#This creates a folder with the datetime for separating
+<<<<<<< HEAD
+		foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
+=======
 		foldername = datetime.datetime.now().strftime("%I-%M%p-%B-%d-%Y")
+>>>>>>> 8c34893666ade2b77ddd683fca1e7fe725c95273
 		subprocess.Popen(["mkdir", f"Runs\\{outputdir}{foldername}"], shell=True)
 		
 		dumpfolder = f"{self.outputpath}\\Runs\\{outputdir}{foldername}"
