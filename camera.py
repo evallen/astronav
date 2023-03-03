@@ -96,7 +96,7 @@ class camera:
 					print("~~~")
 				if len(splitline) > 6:
 					imgname = splitline[5]
-					imgpath = "\"" + " ".join(splitline[8:-5]) + "\""
+					imgpath = " ".join(splitline[8:-5])
 					print(f"Filename: {imgname}\t{imgpath}")
 					return imgname, imgpath
 				if "No" in splitline:

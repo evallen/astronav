@@ -29,7 +29,8 @@ class astap:
         :param database: database name eg. H18, H17, V17, W08 (will default to V17 if none is specified)
         :return: none
         '''
-        command = [self.exePATH, "-f", filename, "-d", self.dbPATH]
+        print(filename)
+        command = [self.exePATH, "-f", rf"{filename}", "-d", self.dbPATH]
         if self.debug: 
             print("EXE:\t" + self.exePATH)
             print("FILE:\t" + filename)
@@ -84,20 +85,17 @@ class astap:
             # filename = filename.split("\\")[-1].split(".")[0] + ".csv"
             # print(filename)
         filename = os.path.join("\\".join(filename.split("\\")[:-1]), "".join(filename.split("\\")[-1].split(".")[0]) + ".csv") # HAHA did you KNOW DIRECTORIES can have EXTENSIONS? I DIDNT LMAO
-        file = open(fr"{filename}", 'rt')
-        if "F" in date_ra_dec:
-            with open(fr"{filename}", 'w+t', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['Image', 'Dec', 'RA ', 'Date', 'Time'])
+        
+        touch = ["type", "nul", ">", rf"{filename}" ]   #touch command for windows. TODO: add a way to determine OS
+        subprocess.run(touch, shell=True, stdout=subprocess.PIPE)
+        with open(fr"{filename}", 'w+t', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Image', 'Dec', 'RA ', 'Date', 'Time'])
+            if "F" in date_ra_dec:
                 writer.writerow([Path(filename).stem, 'f', 'f', 'f', 'f'])
-        else:
-            with open(fr"{filename}", 'w+t', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['Image', 'Dec', 'RA ', 'Date', 'Time'])
+            else:
                 writer.writerow([Path(filename).stem,  date_ra_dec[1], date_ra_dec[2], date_ra_dec[0].date(), date_ra_dec[0].time()])
             
-
-
 
     def evaluate_run(self, test_directory):
         """
