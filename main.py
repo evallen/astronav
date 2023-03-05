@@ -2,12 +2,14 @@
 import camera
 import auto_solve
 import sys, getopt
+import sensor
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
         self.camera = camera.camera()
         self.astapPath = astapPath
         self.databasePath = databasePath
+        self.sensor = sensor.sensor()
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
@@ -34,7 +36,7 @@ class astronav:
                     print("plates not solved. Exiting run and returning to command line")
                     continue
                 # Calculate position based on work from other team mates
-                
+
 
 
                 self.output()
