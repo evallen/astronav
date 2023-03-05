@@ -13,12 +13,12 @@ class astronav:
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
+        self.sensor.startRecord()
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
 
             if(command[0].lower() == "take" or command[0].lower() == "t"):
-
                 imgname, imgpath = self.camera.take()
                 if imgname is None or imgpath is None:
                     print("Camera download failed.")
@@ -42,6 +42,7 @@ class astronav:
                 self.output()
                 
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
+                self.sensor.stopRecord()
                 return 0
             else:
                 print(command)
