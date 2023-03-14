@@ -13,13 +13,24 @@ class astronav:
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
-        self.sensor.startRecord()
+
+        # Creates the Runs\[run name]\captures older structure
+        foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
+        dir = foldername
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+        dir = dir + "\\captures"
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+
+        self.sensor.start()
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
 
             if(command[0].lower() == "take" or command[0].lower() == "t"):
-                imgname, imgpath = self.camera.take()
+
+                # Start capture local capture
+                self.sensor.capture()
+                imgname, imgpath = self.camera.take(outputdir=dir)
                 if imgname is None or imgpath is None:
                     print("Camera download failed.")
                     continue
@@ -30,19 +41,24 @@ class astronav:
                     # If none is selected, use default of both and allow user to select which is used
                     # -> Display plate solved image in GUI, OPTIONAL: replace RAW or display side by side
                 platesolver = self.astap.auto_solve(filename=imgpath)
+
+                # Stop sensor capture
+                self.sensor.stopcap()
+                
                 if(platesolver):
                     print("plates solved")
                 else:
                     print("plates not solved. Exiting run and returning to command line")
                     continue
-                # Calculate position based on work from other team mates
-
-
-
-                self.output()
                 
+                
+            if(command[0].lower() == "eval" or command[0].lower() == "e"):
+                # Calculate position based on work from other team mates
+                self.output()
+                pass
+
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
-                self.sensor.stopRecord()
+                self.sensor.stop()
                 return 0
             else:
                 print(command)

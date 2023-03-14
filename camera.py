@@ -22,6 +22,7 @@ class camera:
 		self.debuglevel = ["normal","verbose","debug"]	#list for debug levels in logging
 		self.outputpath = os.path.dirname(__file__)	#gets path to python file
 		self.mutex = threading.Lock()
+		self.capturenum = 0
 		pass
 
 	# outputdir would not have \ at the beginning
@@ -40,7 +41,8 @@ class camera:
 		"""
 
 		#This creates a folder with the datetime for separating
-		foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
+		self.capturenum += 1
+		foldername = f"Capture{str(self.capturenum)}"
 		subprocess.Popen(["mkdir", f"Runs\\{outputdir}{foldername}"], shell=True)
 		
 		dumpfolder = f"{self.outputpath}\\Runs\\{outputdir}{foldername}"
