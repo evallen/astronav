@@ -52,14 +52,14 @@ void setup() {
 
 void loop() {
   if (inclinometer.available()) { //Get next block of data from sensor
-    Serial.print("X Tilt: ");
+    Serial.print(millis());
+    Serial.print(", ");
     Serial.print(inclinometer.getCalculatedAngleX(), 4);
-    Serial.print("\t");
-    Serial.print("Y Tilt: ");
+    Serial.print(", ");
     Serial.print(inclinometer.getCalculatedAngleY(), 4);
-    Serial.print("\t");
-    Serial.print("Z Tilt: ");
+    Serial.print(", ");
     Serial.println(inclinometer.getCalculatedAngleZ(), 4);
     delay(250); //Allow a little time to see the output
   } else inclinometer.reset();
 }
+
