@@ -94,9 +94,9 @@ class Sensor:
 		self.end_capture = True
 
 	def change_file(self, file):
-		self.duino_stop()
+		self.stop()
 		self.file = file
-		self.duino_start()
+		self.start()
 
 
 if __name__ == '__main__':
