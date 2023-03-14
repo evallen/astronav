@@ -20,13 +20,9 @@ class Sensor:
 		# arduino globals
 		self.start_capture = False
 		self.end_capture = False
-		self.recording = True
+		self.recording = False
 		self.debug = 0
 		self.file = file
-
-		# start arduino thread
-		self.sensorthread = threading.Thread(target=self.duino, args=())
-		self.sensorthread.start()
 
 	def duino(self):
 		# port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
@@ -101,6 +97,6 @@ class Sensor:
 
 if __name__ == '__main__':
 	s = Sensor()
-	s.startRecord()
+	s.start()
 	time.sleep(10)
-	s.stopRecord()
+	s.stop()
