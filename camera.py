@@ -18,7 +18,7 @@ class Capture:
 	def __str__(self):
 		return (str(self.time) + ", " + str(self.x_tilt) + ", " + 
 				str(self.y_tilt) + ", " + str(self.z_tilt))
-				
+
 class camera:
 	def __init__(self):
 		self.ccapi = {
@@ -42,7 +42,6 @@ class camera:
 		self.sensorthread = threading.Thread(target=self.duino, args=())
 		self.sensorthread.start()
 		pass
-
 
 	# outputdir would not have \ at the beginning
 	# TODO add in catches for \
@@ -126,7 +125,7 @@ class camera:
 		# port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
 		# Add compatibility for linux and windows
 		import serial
-		ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+		ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 		ser.setDTR(False) # Drop DTR
 		time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
 		ser.setDTR(True)  # UP the DTR back
@@ -158,7 +157,9 @@ class camera:
 						if not self.debug:
 							self.end_capture = True
 					pyfile.write(str(cap))
+					pyfile.write("\n")
 			
+		pyfile.close()
 		ser.close()
 
 	# starts longterm recording. note: you do not have to call this unless you stopped recording.
