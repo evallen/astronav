@@ -16,15 +16,14 @@ class Capture:
 				str(self.y_tilt) + ", " + str(self.z_tilt))
 
 class Sensor:
-	def __init__(self, file='output.txt'):
+	def __init__(self):
 		# arduino globals
 		self.start_capture = False
 		self.end_capture = False
 		self.recording = False
 		self.debug = 0
-		self.file = file
 
-	def duino(self):
+	def duino(self, file):
 		# port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
 		# Add compatibility for linux and windows
 		import serial
@@ -36,7 +35,7 @@ class Sensor:
 		self.init_time = time.time()
 
 		time.sleep(2)
-		pyfile = open(self.file, 'a')
+		pyfile = open(file, 'a')
 
 		while(self.recording):
 			if self.start_capture:
@@ -49,7 +48,7 @@ class Sensor:
 				self.debug = False
 				
 			line = ser.readline()
-			if line:
+			try:
 				string = line.decode()
 				num = (string).strip('\n\r').split(", ")
 				if(len(num) == 4):
@@ -61,14 +60,16 @@ class Sensor:
 							self.end_capture = True
 					pyfile.write(str(cap))
 					pyfile.write("\n")
+			except:
+				continue
 			
 		pyfile.close()
 		ser.close()
 
 	# starts longterm recording. note: you do not have to call this unless you stopped recording.
-	def start(self):
+	def start(self, file="run.txt"):
 		self.recording = True
-		self.sensorthread = threading.Thread(target=self.duino, args=())
+		self.sensorthread = threading.Thread(target=self.duino, args=(file, ))
 		self.sensorthread.start()
 
 	# stops recording, closes serial, and ends thread
@@ -88,11 +89,6 @@ class Sensor:
 
 	def stopcap(self):
 		self.end_capture = True
-
-	def change_file(self, file):
-		self.stop()
-		self.file = file
-		self.start()
 
 
 if __name__ == '__main__':
