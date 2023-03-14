@@ -22,6 +22,16 @@ class camera:
 		self.debuglevel = ["normal","verbose","debug"]	#list for debug levels in logging
 		self.outputpath = os.path.dirname(__file__)	#gets path to python file
 		self.mutex = threading.Lock()
+
+		# arduino globals
+		self.start_capture = False
+		self.end_capture = False
+		self.recording = True
+		self.debug = 0
+
+		# start arduino thread
+		self.sensorthread = threading.Thread(target=self.duino, args=())
+		self.sensorthread.start()
 		pass
 
 
@@ -103,7 +113,68 @@ class camera:
 					print(" ".join(splitline[1:4] + " Capture"))
 		return None, None	#Check this return type in 
        
+	def duino(self, file='output.txt'):
+		# port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
+		# Add compatibility for linux and windows
+		import serial
+		ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+		ser.setDTR(False) # Drop DTR
+		time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
+		ser.setDTR(True)  # UP the DTR back
 
+		self.init_time = time.time()
+
+		time.sleep(2)
+		pyfile = open(file, 'a')
+
+		while(self.recording):
+			if self.start_capture:
+				self.start_capture = False
+				ser.reset_input_buffer()
+				pyfile.write('+++ Taking Capture\n')
+			if self.end_capture:
+				self.end_capture = False
+				pyfile.write('--- Ending Capture\n')
+				self.debug = False
+				
+			line = ser.readline()
+			if line:
+				string = line.decode()
+				num = (string).strip('\n\r').split(", ")
+				if(len(num) == 4):
+					cap = Capture(float(num[0])/1000 + time.time(), num[1], num[2], num[3])
+					if self.debug:
+						self.debug -= 1
+						print("val", str(cap))
+						if not self.debug:
+							self.end_capture = True
+					pyfile.write(str(cap))
+			
+		ser.close()
+
+	# starts longterm recording. note: you do not have to call this unless you stopped recording.
+	def duino_start(self):
+		self.recording = True
+		self.sensorthread = threading.Thread(target=self.duino, args=())
+		self.sensorthread.start()
+
+	# stops recording, closes serial, and ends thread
+	# add to deconstructor when implemented
+	def duino_stop(self):
+		self.recording = False
+		self.sensorthread.join()
+
+	# debug requires a number, if enabled it'll run until debug hits 0:
+	# when it does, it stops capture.
+	# can also set it so it will run for a certain duration instead
+	def duino_capture(self, debug=0):
+		self.start_capture = True
+		self.debug = debug
+		while(self.debug):
+			sys.stdout.flush()
+
+	def duino_stopcap(self):
+		self.end_capture = True
 
 
 if __name__ == '__main__':
