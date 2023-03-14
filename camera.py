@@ -10,6 +10,15 @@ import threading
 import datetime
 import sys
 
+# simple capture object for csv grabbing
+class Capture:
+	def __init__(self, time, x_tilt, y_tilt, z_tilt):
+		self.time = time; self.x_tilt = x_tilt
+		self.y_tilt = y_tilt; self.z_tilt = z_tilt
+	def __str__(self):
+		return (str(self.time) + ", " + str(self.x_tilt) + ", " + 
+				str(self.y_tilt) + ", " + str(self.z_tilt))
+				
 class camera:
 	def __init__(self):
 		self.ccapi = {
