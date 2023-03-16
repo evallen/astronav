@@ -8,7 +8,6 @@ import pandas
 import csv
 from pathlib import Path
 import pandas as pd
-import glob
 
 # python3 - install --upgrade pip --user
 # python3 -m pip install -U pandas
@@ -79,11 +78,11 @@ class astap:
         subprocess.run(touch, shell=True, stdout=subprocess.PIPE)
         with open(fr"{filename}", 'w+t', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Image', 'Dec', 'RA ', 'Date', 'Time'])
+            writer.writerow(['dec', 'ra', 'date', 'time'])
             if "F" in date_ra_dec:
                 writer.writerow([Path(filename).stem, 'f', 'f', 'f', 'f'])
             else:
-                writer.writerow([Path(filename).stem,  date_ra_dec[1], date_ra_dec[2], date_ra_dec[0].date(), date_ra_dec[0].time()])
+                writer.writerow([date_ra_dec[2], date_ra_dec[1], date_ra_dec[0].strftime('%m/%d/%Y'), date_ra_dec[0].strftime('%I:%M:%S')])
             
 
     def evaluate_run(self, test_directory):
@@ -103,19 +102,17 @@ class astap:
         captures_dir = f"{test_directory}/captures/"
         test_name = os.path.basename(test_directory)
         all_dirs = next(os.walk(captures_dir))[1]
-        print(test_name)
 
         all_files = []
         for dirs in all_dirs:
             all_files.append(captures_dir + '/' + dirs + '/' + dirs + '.csv')
-        print(all_dirs)
 
         li = pd.DataFrame()
 
         for filename in all_files:
             df = pd.read_csv(filename)
-            li = pd.concat([li, df], ignore_index=True)
-        # print(os.path.basename(str(Path(test_directory).parents[0])))
+            if df['ra'][0] != 'f':
+                li = pd.concat([li, df], ignore_index=True)
         li.to_csv(test_directory + "/" + test_name + '.csv', index=False)
 
     def auto_solve(self, filename):
@@ -133,29 +130,4 @@ class astap:
         return True
 
 if __name__ == '__main__':
-    directory_0 = 'tests/test_0/captures/capture_0/'
-    filename_0 = 'IMG_3504.CR3'
-
-    directory_1 = 'tests/test_0/captures/capture_1/'
-    filename_1 = 'IMG_3505.CR3'
-
-    directory_2 = 'tests/test_0/captures/capture_2/'
-    filename_2 = 'IMG_3506.CR3'
-
-    directory_3 = 'tests/test_0/captures/capture_3/'
-    filename_3 = 'IMG_3509.CR3'
-
-    directory_4 = 'tests/test_0/captures/capture_4/'
-    filename_4 = 'IMG_3510.CR3'
-
-    directory_5 = 'tests/test_0/captures/capture_5/'
-    filename_5 = 'IMG_3511.CR3'
-
-    #auto_solve(directory_0 + filename_0)
-    #auto_solve(directory_1 + filename_1)
-    #auto_solve(directory_2 + filename_2)
-    #auto_solve(directory_3 + filename_3)
-    #auto_solve(directory_4 + filename_4)
-    #auto_solve(directory_5 + filename_5)
-
-    #evaluate_run('tests/test_0')
+    pass

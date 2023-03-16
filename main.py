@@ -3,6 +3,8 @@ import camera
 import auto_solve
 import sys, getopt
 import sensor
+import datetime
+import subprocess
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
@@ -10,16 +12,32 @@ class astronav:
         self.astapPath = astapPath
         self.databasePath = databasePath
         self.sensor = sensor.sensor()
+        self.initiated = False
+        self.dir
+        self.skipTake = False
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
-        self.sensor.startRecord()
+
+        
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
 
+            if(command[0].lower() == "new" or command[0].lower() == "n"):
+                if self.initiated:
+                    self.sensor.stop()
+                self.newCapture()
+
             if(command[0].lower() == "take" or command[0].lower() == "t"):
-                imgname, imgpath = self.camera.take()
+
+                # initiates a new capture if one has not been started yet
+                if not self.initiated:
+                    self.newCapture()
+
+                # Start capture local capture
+                self.sensor.capture()
+                imgname, imgpath = self.camera.take(outputdir=dir)
                 if imgname is None or imgpath is None:
                     print("Camera download failed.")
                     continue
@@ -30,23 +48,41 @@ class astronav:
                     # If none is selected, use default of both and allow user to select which is used
                     # -> Display plate solved image in GUI, OPTIONAL: replace RAW or display side by side
                 platesolver = self.astap.auto_solve(filename=imgpath)
+
+                # Stop sensor capture
+                self.sensor.stopcap()
+                
                 if(platesolver):
                     print("plates solved")
                 else:
                     print("plates not solved. Exiting run and returning to command line")
                     continue
-                # Calculate position based on work from other team mates
-
-
-
-                self.output()
                 
+                
+            if(command[0].lower() == "eval" or command[0].lower() == "e"):
+                # Calculate position based on work from other team mates
+                self.output()
+                pass
+
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
-                self.sensor.stopRecord()
+                self.sensor.stop()
+                self.initiated = False
                 return 0
             else:
                 print(command)
         pass
+
+    def newCapture(self):
+        # Creates the Runs\[run name]\captures older structure
+        foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
+        dir = foldername
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+        dir = dir + "\\captures"
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+        self.dir = dir
+
+        self.sensor.start()
+        self.initiated = True
 
     def output(self, X = "NOT IMPLEMENTED", Y = "NOT IMPLEMENTED", Z = "NOT IMPLEMENTED"):
         # Push coordinates into error calculation unit and output to user with data
