@@ -12,6 +12,7 @@ class astronav:
         self.sensor = sensor.sensor()
         self.initiated = False
         self.dir
+        self.skipTake = False
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
