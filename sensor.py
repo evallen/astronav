@@ -27,7 +27,8 @@ class Sensor:
 		# port is a device name: depending on operating system. e.g. /dev/ttyUSB0 on GNU/Linux or COM3 on Windows.
 		# Add compatibility for linux and windows
 		import serial
-		ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+		# ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
+		ser = serial.Serial('COM3', 9600, timeout=1)
 		ser.setDTR(False) # Drop DTR
 		time.sleep(0.022)    # Read somewhere that 22ms is what the UI does.
 		ser.setDTR(True)  # UP the DTR back
