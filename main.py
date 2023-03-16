@@ -1,10 +1,15 @@
 #!/usr/bin/python
 import camera
 import auto_solve
+import multilateration
 import sys, getopt
 import sensor
+<<<<<<< HEAD
+import os
+=======
 import datetime
 import subprocess
+>>>>>>> 161a63ce9c0c65ad8ea0391e314ceb5f90ca24b9
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
@@ -12,8 +17,11 @@ class astronav:
         self.astapPath = astapPath
         self.databasePath = databasePath
         self.sensor = sensor.sensor()
+        #self.multilateration = multilateration.
         self.initiated = False
         self.dir
+        self.runDir
+        self.capturesDir
         self.skipTake = False
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
@@ -61,6 +69,13 @@ class astronav:
                 
             if(command[0].lower() == "eval" or command[0].lower() == "e"):
                 # Calculate position based on work from other team mates
+                self.sensor.stop()
+                self.initiated = False
+
+                # needs the Run directory
+                self.astap.evaluate_run(self, self.runDir)
+                #multilateration.calculate_coords()
+
                 self.output()
                 pass
 
@@ -74,12 +89,13 @@ class astronav:
 
     def newCapture(self):
         # Creates the Runs\[run name]\captures older structure
+        self.dir = os.getcwd()
         foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
-        dir = foldername
+        self.runDir = dir = foldername
         subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
         dir = dir + "\\captures"
         subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
-        self.dir = dir
+        self.capturesDir = dir
 
         self.sensor.start()
         self.initiated = True
