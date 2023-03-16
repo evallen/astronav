@@ -79,7 +79,7 @@ class camera:
   
 	def request(self, args, debug=False):
 		process = [
-      		"python3", "Canomate/Canomate.py"
+      		"python", "Canomate/Canomate.py"
 		]
 		process = process + args
 		if debug: print(process)
