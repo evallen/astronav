@@ -4,24 +4,21 @@ import auto_solve
 import multilateration
 import sys, getopt
 import sensor
-<<<<<<< HEAD
 import os
-=======
 import datetime
 import subprocess
->>>>>>> 161a63ce9c0c65ad8ea0391e314ceb5f90ca24b9
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
         self.camera = camera.camera()
         self.astapPath = astapPath
         self.databasePath = databasePath
-        self.sensor = sensor.sensor()
+        self.sensor = sensor.Sensor()
         #self.multilateration = multilateration.
         self.initiated = False
-        self.dir
-        self.runDir
-        self.capturesDir
+        self.dir = None
+        self.runDir = None
+        self.capturesDir = None
         self.skipTake = False
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
@@ -45,16 +42,20 @@ class astronav:
 
                 # Start capture local capture
                 self.sensor.capture()
-                imgname, imgpath = self.camera.take(outputdir=dir)
+                imgname, imgpath = self.camera.take(outputdir=self.capturesDir)
                 if imgname is None or imgpath is None:
                     print("Camera download failed.")
                     continue
+                else:
+                    print("Camera download complete.")
 
                 # Process image somehow
                 # Push image into plate solving software, try more than one software in early stages
                     # Take in argument to determine which one is used
                     # If none is selected, use default of both and allow user to select which is used
                     # -> Display plate solved image in GUI, OPTIONAL: replace RAW or display side by side
+                print("Attempting plate solve...")
+                # platesolver = self.astap.auto_solve(filename=imgpath)
                 platesolver = self.astap.auto_solve(filename=imgpath)
 
                 # Stop sensor capture
@@ -73,8 +74,12 @@ class astronav:
                 self.initiated = False
 
                 # needs the Run directory
-                self.astap.evaluate_run(self, self.runDir)
-                #multilateration.calculate_coords()
+                self.astap.evaluate_run(f"Runs\\{self.runDir}")
+                multilateration.calculate_coords(
+                    f"Runs\\{self.runDir}\\{self.runDir}.csv",
+                    f"Runs\\{self.runDir}\\sensor.txt",
+                    "03/16/2023",
+                )
 
                 self.output()
                 pass
@@ -97,7 +102,7 @@ class astronav:
         subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
         self.capturesDir = dir
 
-        self.sensor.start()
+        self.sensor.start(f"Runs\\{self.runDir}\\sensor.txt")
         self.initiated = True
 
     def output(self, X = "NOT IMPLEMENTED", Y = "NOT IMPLEMENTED", Z = "NOT IMPLEMENTED"):

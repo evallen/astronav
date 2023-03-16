@@ -101,7 +101,7 @@ def _angular_dist(latlon1, latlon2):
     return sep
 
 
-def _parse_line(line: str, date: str, sensor_timezone=-5) -> pd.Series:
+def _parse_line_OLD(line: str, date: str, sensor_timezone: int) -> pd.Series:
     """
     Parse a line of the sensor data.
 
@@ -136,8 +136,32 @@ def _read_sensor_txt(path: str, date: str) -> pd.DataFrame:
     Returns:
         Dataframe with the sensor data.
     """
+    df = pd.read_csv(path, names=["time", "x", "y", "z"],
+                     dtype={
+                        "time": np.float64,
+                        "x": np.float64,
+                        "y": np.float64,
+                        "z": np.float64,
+                     })
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    
+    return df
+
+
+def _read_sensor_txt_OLD(path: str, date: str) -> pd.DataFrame:
+    """
+    Get the Pandas dataframe corresponding to the sensor data from the sensor
+    output file specified.
+
+    Params:
+    -- path: Path to the sensor file.
+    -- date: Date of the sensor reading in the format "MM/DD/YYYY" without leading zeroes.
+
+    Returns:
+        Dataframe with the sensor data.
+    """
     with open(path) as file:
-        df = pd.DataFrame(_parse_line(line, date) for line in file.readlines())
+        df = pd.DataFrame(_parse_line_OLD(line, date) for line in file.readlines())
     
     return df
 

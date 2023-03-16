@@ -13,7 +13,7 @@ import pandas as pd
 # python3 -m pip install -U pandas
 
 class astap:
-    def __init__(self, astapPath="astap", databasePath="v17", debug=False):
+    def __init__(self, astapPath="C:\\Program Files\\astap.exe", databasePath="C:\\Program Files\\astap\\v17", debug=False):
         self.exePATH = rf"{astapPath}"
         self.dbPATH = rf"{databasePath}"
         self.debug = debug

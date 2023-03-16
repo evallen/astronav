@@ -42,10 +42,10 @@ class Sensor:
 			if self.start_capture:
 				self.start_capture = False
 				ser.reset_input_buffer()
-				pyfile.write('+++ Taking Capture\n')
+				# pyfile.write('+++ Taking Capture\n')
 			if self.end_capture:
 				self.end_capture = False
-				pyfile.write('--- Ending Capture\n')
+				# pyfile.write('--- Ending Capture\n')
 				self.debug = False
 				
 			line = ser.readline()
