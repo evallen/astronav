@@ -10,23 +10,28 @@ class astronav:
         self.astapPath = astapPath
         self.databasePath = databasePath
         self.sensor = sensor.sensor()
+        self.initiated = False
+        self.dir
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
 
-        # Creates the Runs\[run name]\captures older structure
-        foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
-        dir = foldername
-        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
-        dir = dir + "\\captures"
-        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
-
-        self.sensor.start()
+        
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
 
+            if(command[0].lower() == "new" or command[0].lower() == "n"):
+                if self.initiated:
+                    self.sensor.stop()
+                    self.newCapture()
+                self.newCapture()
+
             if(command[0].lower() == "take" or command[0].lower() == "t"):
+
+                # initiates a new capture if one has not been started yet
+                if not self.initiated:
+                    self.newCapture()
 
                 # Start capture local capture
                 self.sensor.capture()
@@ -63,6 +68,18 @@ class astronav:
             else:
                 print(command)
         pass
+
+    def newCapture(self):
+        # Creates the Runs\[run name]\captures older structure
+        foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
+        dir = foldername
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+        dir = dir + "\\captures"
+        subprocess.Popen(["mkdir", f"Runs\\{dir}"], shell=True)
+        self.dir = dir
+
+        self.sensor.start()
+        self.initiated = True
 
     def output(self, X = "NOT IMPLEMENTED", Y = "NOT IMPLEMENTED", Z = "NOT IMPLEMENTED"):
         # Push coordinates into error calculation unit and output to user with data
