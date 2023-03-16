@@ -3,6 +3,8 @@ import camera
 import auto_solve
 import sys, getopt
 import sensor
+import datetime
+import subprocess
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
