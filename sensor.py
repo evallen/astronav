@@ -68,15 +68,17 @@ class Sensor:
 
 	# starts longterm recording. note: you do not have to call this unless you stopped recording.
 	def start(self, file="run.txt"):
-		self.recording = True
-		self.sensorthread = threading.Thread(target=self.duino, args=(file, ))
-		self.sensorthread.start()
+		if not self.recording:
+			self.recording = True
+			self.sensorthread = threading.Thread(target=self.duino, args=(file, ))
+			self.sensorthread.start()
 
 	# stops recording, closes serial, and ends thread
 	# add to deconstructor when implemented
 	def stop(self):
-		self.recording = False
-		self.sensorthread.join()
+		if self.recording:
+			self.recording = False
+			self.sensorthread.join()
 
 	# debug requires a number, if enabled it'll run until debug hits 0:
 	# when it does, it stops capture.
@@ -90,6 +92,43 @@ class Sensor:
 	def stopcap(self):
 		self.end_capture = True
 
+# returns a list of captures from file
+def read_sensor_data(file):
+	with open(file, 'r') as pyfile:
+		out = []
+		for string in iter(pyfile.readline, ''):
+			num = (string).strip('\n\r').split(", ")
+			if(len(num) == 4):
+				out.append(Capture(num[0], num[1], num[2], num[3]))
+	return out
+
+# gets list of list of capture objects, head list is for each cam capture
+def get_captures(file):
+	with open(file, 'r') as pyfile:
+		in_cap = False
+		out = []
+		sub_list = []
+		for string in iter(pyfile.readline, ''):
+			if in_cap: # currently capturing, scanning for capture or stopcap
+				num = (string).strip('\n\r').split(", ")
+				if(string[0] == '-'):
+					out.append(sub_list)
+					sub_list = []
+					in_cap = False
+				elif(len(num) == 4):
+					sub_list.append(Capture(num[0], num[1], num[2], num[3]))
+			elif(string[0] == '+'): # not capturing, scanning for startcap
+				in_cap = True
+	return out
+
+def ex_sensor():
+	caps = get_captures("experiments/ex_sensor.txt")
+	# get first reading of first capture
+	reading = caps[0][0]
+	print("Time (s): " + reading.time + ", X_Tilt: " + reading.x_tilt + ", Y_Tilt: " + reading.y_tilt + ", Z_Tilt: " + reading.z_tilt)
+
+	# read_sensor_data will instead of getting captures, just give a continuous list of all readings
+	# might be more compatible with current functionality iirc
 
 if __name__ == '__main__':
 	s = Sensor()
