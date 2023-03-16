@@ -14,6 +14,7 @@ class astronav:
         self.sensor = sensor.sensor()
         self.initiated = False
         self.dir
+        self.skipTake = False
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
@@ -26,7 +27,6 @@ class astronav:
             if(command[0].lower() == "new" or command[0].lower() == "n"):
                 if self.initiated:
                     self.sensor.stop()
-                    self.newCapture()
                 self.newCapture()
 
             if(command[0].lower() == "take" or command[0].lower() == "t"):
@@ -66,6 +66,7 @@ class astronav:
 
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
                 self.sensor.stop()
+                self.initiated = False
                 return 0
             else:
                 print(command)
