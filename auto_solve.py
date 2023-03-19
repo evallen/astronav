@@ -82,6 +82,8 @@ class astap:
             if "F" in date_ra_dec:
                 writer.writerow([Path(filename).stem, 'f', 'f', 'f', 'f'])
             else:
+                print(f"RA: {date_ra_dec[1]}")
+                print(f"Dec: {date_ra_dec[2]}")
                 writer.writerow([date_ra_dec[2], date_ra_dec[1], date_ra_dec[0].strftime('%m/%d/%Y'), date_ra_dec[0].strftime('%I:%M:%S')])
             
 
