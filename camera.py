@@ -43,9 +43,9 @@ class camera:
 		#This creates a folder with the datetime for separating
 		self.capturenum += 1
 		foldername = f"Capture{str(self.capturenum)}"
-		subprocess.Popen(["mkdir", f"Runs\\{outputdir}{foldername}"], shell=True)
+		subprocess.Popen(["mkdir", f"Runs\\{outputdir}\\{foldername}"], shell=True)
 		
-		dumpfolder = f"{self.outputpath}\\Runs\\{outputdir}{foldername}"
+		dumpfolder = f"{self.outputpath}\\Runs\\{outputdir}\\{foldername}"
 		args = [
 			"--ipaddress", f"{self.ccapi['IP']}", 
 			"--port", f"{self.ccapi['PORT']}",
