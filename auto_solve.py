@@ -103,7 +103,7 @@ class astap:
         """
 
         test_name = os.path.basename(test_directory)
-        captures_dir = r'{test_directory}\captures\*\*.CR3*'
+        captures_dir = r'{test_directory}\captures\*\*.csv*'
 
 
         all_files = []
