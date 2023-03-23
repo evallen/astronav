@@ -1,6 +1,7 @@
 #ASTRONAV
 #auto_solve.py
 
+import glob
 import os
 import subprocess
 import re
@@ -13,7 +14,7 @@ import pandas as pd
 # python3 -m pip install -U pandas
 
 class astap:
-    def __init__(self, astapPath="C:\\Program Files\\astap.exe", databasePath="C:\\Program Files\\astap\\v17", debug=False):
+    def __init__(self, astapPath="C:\\Program Files\\astap\\astap.exe", databasePath="C:\\Program Files\\astap\\v17", debug=False):
         self.exePATH = rf"{astapPath}"
         self.dbPATH = rf"{databasePath}"
         self.debug = debug
@@ -80,6 +81,7 @@ class astap:
             writer = csv.writer(file)
             writer.writerow(['dec', 'ra', 'date', 'time'])
             if "F" in date_ra_dec:
+                print(f"Could not plate solve. Please try again.")
                 writer.writerow([Path(filename).stem, 'f', 'f', 'f', 'f'])
             else:
                 print(f"RA: {date_ra_dec[1]}")
@@ -105,9 +107,10 @@ class astap:
         test_name = os.path.basename(test_directory)
         all_dirs = next(os.walk(captures_dir))[1]
 
-        all_files = []
-        for dirs in all_dirs:
-            all_files.append(captures_dir + '/' + dirs + '/' + dirs + '.csv')
+        # all_files = []
+        # for dirs in all_dirs:
+        #     all_files.append(captures_dir + '/' + dirs + '/' + dirs + '.csv')
+        all_files = glob.glob(f"{captures_dir}/*/*.csv")
 
         li = pd.DataFrame()
 

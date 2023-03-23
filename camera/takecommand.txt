@@ -5,8 +5,7 @@ SetStillImageQuality rawquality=raw jpegquality=none
 
 AssertCameraSettings moviemode=off modedial=m 
 SetAperture aperture=f5.6
-SetShutterSpeed shutterspeed=1/200
-SetIso iso=12800
+SetIso iso=3200
 TakePhoto
 
 WaitForNewFilesOnCamera maxwaittime=60

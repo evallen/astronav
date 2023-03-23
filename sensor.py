@@ -53,7 +53,8 @@ class Sensor:
 				string = line.decode()
 				num = (string).strip('\n\r').split(", ")
 				if(len(num) == 4):
-					cap = Capture(float(num[0])/1000 + time.time(), num[1], num[2], num[3])
+					# cap = Capture(float(num[0])/1000 + time.time(), num[1], num[2], num[3])
+					cap = Capture(time.time(), num[1], num[2], num[3])
 					if self.debug:
 						self.debug -= 1
 						print("val", str(cap))

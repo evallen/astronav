@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import re
 import pandas as pd
 
+from matplotlib import pyplot as plt
 
 # This code is heavily based off of the example at
 # https://github.com/koru1130/multilateration/blob/master/multilateration.py
@@ -161,7 +162,7 @@ def _read_sensor_txt_OLD(path: str, date: str) -> pd.DataFrame:
         Dataframe with the sensor data.
     """
     with open(path) as file:
-        df = pd.DataFrame(_parse_line_OLD(line, date) for line in file.readlines())
+        df = pd.DataFrame(_parse_line_OLD(line, date, -5) for line in file.readlines())
     
     return df
 
@@ -181,6 +182,11 @@ def _get_averaged_reading(reading_data: pd.DataFrame, col: str, exposure_start: 
     """
     our_data = reading_data[reading_data['time'].between(exposure_start, exposure_start + exposure_duration)]
     median = our_data[col].median()
+
+    plt.figure()
+    plt.plot(our_data['time'], our_data[col])
+    plt.show()
+
     return median
 
 
@@ -259,6 +265,8 @@ class MultilaterationResult:
         out += f"Elapsed: {self.elapsed_time}s\n"
         out += f"Latitude: {self.lat.to_string(unit=u.degree)}\n"
         out += f"Longitude: {self.lon.to_string(unit=u.degree)}\n"
+        out += f"Latitude (decimal): {self.lat.to_string(unit=u.degree, decimal=True)}\n"
+        out += f"Longitude (decimal): {self.lon.to_string(unit=u.degree, decimal=True)}\n"
         out += f"Alt. Bias: {self.alt_bias.to_string(unit=u.degree)}\n"
         
         if self.err_angular is not None:
