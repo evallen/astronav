@@ -8,6 +8,7 @@ import pandas
 import csv
 from pathlib import Path
 import pandas as pd
+import glob
 
 # python3 - install --upgrade pip --user
 # python3 -m pip install -U pandas
@@ -29,7 +30,7 @@ class astap:
         :return: none
         '''
         print(filename)
-        command = [self.exePATH, "-f", rf"{filename}", "-d", self.dbPATH]
+        command = [self.exePATH, "-f", rf"{filename}", "-d", self.dbPATH, "-r 180"]
         if self.debug: 
             print("EXE:\t" + self.exePATH)
             print("FILE:\t" + filename)
@@ -101,13 +102,13 @@ class astap:
         :return: none
         """
 
-        captures_dir = f"{test_directory}/captures/"
         test_name = os.path.basename(test_directory)
-        all_dirs = next(os.walk(captures_dir))[1]
+        captures_dir = r'{test_directory}\captures\*\*.CR3*'
+
 
         all_files = []
-        for dirs in all_dirs:
-            all_files.append(captures_dir + '/' + dirs + '/' + dirs + '.csv')
+        for file in glob.glob(captures_dir, recursive=True):
+            all_files.append(file)
 
         li = pd.DataFrame()
 
