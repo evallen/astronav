@@ -2,7 +2,6 @@
 import camera
 import auto_solve
 import multilateration
-import sys, getopt
 import sensor
 import os
 import datetime
@@ -62,7 +61,7 @@ class astronav:
                 self.sensor.stopcap()
                 
                 if(platesolver):
-                    print("plates solved")
+                    print("Ran plate solver")
                 else:
                     print("plates not solved. Exiting run and returning to command line")
                     continue
@@ -75,13 +74,13 @@ class astronav:
 
                 # needs the Run directory
                 self.astap.evaluate_run(f"Runs\\{self.runDir}")
-                multilateration.calculate_coords(
+                result = multilateration.calculate_coords(
                     f"Runs\\{self.runDir}\\{self.runDir}.csv",
                     f"Runs\\{self.runDir}\\sensor.txt",
-                    "03/16/2023",
+                    datetime.datetime.now().strftime("%D")
                 )
+                print(result)
 
-                self.output()
                 pass
 
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
@@ -104,20 +103,6 @@ class astronav:
 
         self.sensor.start(f"Runs\\{self.runDir}\\sensor.txt")
         self.initiated = True
-
-    def output(self, X = "NOT IMPLEMENTED", Y = "NOT IMPLEMENTED", Z = "NOT IMPLEMENTED"):
-        # Push coordinates into error calculation unit and output to user with data
-        # -> Display raw coordinates on GUI display or command line
-
-        XERROR = "NOT IMPLEMENTED"
-        YERROR = "NOT IMPLEMENTED"
-        ZERROR = "NOT IMPLEMENTED"
-        print("Position X: " + X + "\t\tError: " + XERROR)
-        print("Position Y: " + Y + "\t\tError: " + YERROR)
-        print("Position Z: " + Z + "\t\tError: " + ZERROR)
-
-        #OPTIONAL: display coordinates on some sort of offline map data software/program
-        # -> Display map in final result
 
     def takeImage(self):
         # Take image from camera
