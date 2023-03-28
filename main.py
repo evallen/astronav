@@ -6,6 +6,7 @@ import sensor
 import os
 import datetime
 import subprocess
+import gui
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
@@ -22,8 +23,7 @@ class astronav:
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
-
-        
+        gui.showGUI()
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
