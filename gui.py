@@ -56,7 +56,7 @@ def showGUI():
     app = QApplication(sys.argv)
     photo_viewer = PhotoViewer()
     photo_viewer.show()
-    sys.exit(app.exec())
+    app.exec()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
