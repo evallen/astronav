@@ -7,6 +7,7 @@ import os
 import datetime
 import subprocess
 import gui
+import threading
 
 class astronav:
     def __init__(self, astapPath="astap", databasePath="v17"):
@@ -23,7 +24,7 @@ class astronav:
         self.astap = auto_solve.astap(astapPath=astapPath, databasePath=databasePath, debug=False)
 
     def commandLine(self):
-        gui.showGUI()
+        
         #Initiate REPL loop to take in commands and issue instructions to user
         while(True):
             command = input(av.fetchPrompt()).split()
@@ -131,4 +132,7 @@ if __name__ == "__main__":
     print("WELCOME TO ASTRONAV")
     av = astronav(astapPath="C:\\Program Files\\astap\\astap.exe", databasePath="C:\\Program Files\\astap\\v17")
     #Process command line arguments somehow
-    av.commandLine()
+    
+    #guiThread = threading.Thread(target=av.commandLine()) #, daemon=True)
+    #guiThread.start()
+    gui.showGUI()
