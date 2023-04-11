@@ -147,14 +147,14 @@ class SpreadsheetModel(QAbstractTableModel):
             return True
         return False
 
-class Spreadsheet(QWidget):
+# class Spreadsheet(QWidget):
     
-    def __init__(self):
-        super().__init__()
-        self.initUI()
+#     def __init__(self):
+#         super().__init__()
+#         self.initUI()
         
-    def initUI(self):
-        pass
+#     def initUI(self):
+#         pass
     
     # def add_data(self):
     #     # Get the new data from the form
@@ -174,8 +174,8 @@ class Spreadsheet(QWidget):
 #     ex = Spreadsheet()
 #     sys.exit(app.exec_())
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    photo_viewer = PhotoViewer()
-    photo_viewer.show()
-    sys.exit(app.exec())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     photo_viewer = PhotoViewer()
+#     photo_viewer.show()
+#     sys.exit(app.exec())

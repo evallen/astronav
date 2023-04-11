@@ -30,59 +30,14 @@ class astronav:
             command = input(av.fetchPrompt()).split()
 
             if(command[0].lower() == "new" or command[0].lower() == "n"):
-                if self.initiated:
-                    self.sensor.stop()
                 self.newCapture()
 
             if(command[0].lower() == "take" or command[0].lower() == "t"):
-
-                # initiates a new capture if one has not been started yet
-                if not self.initiated:
-                    self.newCapture()
-
-                # Start capture local capture
-                self.sensor.capture()
-                imgname, imgpath = self.camera.take(outputdir=self.capturesDir)
-                if imgname is None or imgpath is None:
-                    print("Camera download failed.")
-                    continue
-                else:
-                    print("Camera download complete.")
-
-                # Process image somehow
-                # Push image into plate solving software, try more than one software in early stages
-                    # Take in argument to determine which one is used
-                    # If none is selected, use default of both and allow user to select which is used
-                    # -> Display plate solved image in GUI, OPTIONAL: replace RAW or display side by side
-                print("Attempting plate solve...")
-                # platesolver = self.astap.auto_solve(filename=imgpath)
-                platesolver = self.astap.auto_solve(filename=imgpath)
-
-                # Stop sensor capture
-                self.sensor.stopcap()
-                
-                if(platesolver):
-                    print("Ran plate solver")
-                else:
-                    print("plates not solved. Exiting run and returning to command line")
-                    continue
-                
+                self.takeFunct()
                 
             if(command[0].lower() == "eval" or command[0].lower() == "e"):
-                # Calculate position based on work from other team mates
-                self.sensor.stop()
-                self.initiated = False
-
-                # needs the Run directory
-                self.astap.evaluate_run(f"Runs\\{self.runDir}")
-                result = multilateration.calculate_coords(
-                    f"Runs\\{self.runDir}\\{self.runDir}.csv",
-                    f"Runs\\{self.runDir}\\sensor.txt",
-                    datetime.datetime.now().strftime("%D")
-                )
-                print(result)
-
-                pass
+                if not self.evalFunct():
+                    continue
 
             elif command[0].lower() == "exit" or command[0].lower() == "quit" or command[0].lower() == "q" or command[0].lower() == "e":
                 self.sensor.stop()
@@ -92,7 +47,57 @@ class astronav:
                 print(command)
         pass
 
+    def takeFunct(self):
+        # initiates a new capture if one has not been started yet
+        if not self.initiated:
+            self.newCapture()
+
+        # Start capture local capture
+        self.sensor.capture()
+        imgname, imgpath = self.camera.take(outputdir=self.capturesDir)
+        if imgname is None or imgpath is None:
+            print("Camera download failed.")
+            return False
+        else:
+            print("Camera download complete.")
+
+        # Process image somehow
+        # Push image into plate solving software, try more than one software in early stages
+            # Take in argument to determine which one is used
+            # If none is selected, use default of both and allow user to select which is used
+            # -> Display plate solved image in GUI, OPTIONAL: replace RAW or display side by side
+        print("Attempting plate solve...")
+        # platesolver = self.astap.auto_solve(filename=imgpath)
+        platesolver = self.astap.auto_solve(filename=imgpath)
+
+        # Stop sensor capture
+        self.sensor.stopcap()
+        
+        if(platesolver):
+            print("Ran plate solver")
+        else:
+            print("plates not solved. Exiting run and returning to command line")
+            return False
+        return True
+
+
+    def evalFunct(self):
+        # Calculate position based on work from other team mates
+        self.sensor.stop()
+        self.initiated = False
+
+        # needs the Run directory
+        self.astap.evaluate_run(f"Runs\\{self.runDir}")
+        result = multilateration.calculate_coords(
+            f"Runs\\{self.runDir}\\{self.runDir}.csv",
+            f"Runs\\{self.runDir}\\sensor.txt",
+            datetime.datetime.now().strftime("%D")
+        )
+        print(result)
+
     def newCapture(self):
+        if self.initiated:
+            self.sensor.stop()
         # Creates the Runs\[run name]\captures older structure
         self.dir = os.getcwd()
         foldername = datetime.datetime.now().strftime("%b-%d-%Y--%I-%M%p")
