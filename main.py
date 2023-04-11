@@ -6,7 +6,6 @@ import sensor
 import os
 import datetime
 import subprocess
-import gui
 import threading
 
 class astronav:
@@ -140,4 +139,4 @@ if __name__ == "__main__":
     
     #guiThread = threading.Thread(target=av.commandLine()) #, daemon=True)
     #guiThread.start()
-    gui.showGUI()
+    #gui.showGUI()

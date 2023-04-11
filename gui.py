@@ -1,11 +1,14 @@
 # This Python file uses the following encoding: utf-8
 import sys, subprocess
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QGridLayout, QTextEdit, QMainWindow, QLineEdit, QPushButton, QTableView, QTableView, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QTextCursor
 from PySide6.QtCore import QObject, QEvent, QCoreApplication, QThread, Qt, QAbstractTableModel, QSize #, QVariant
-
+from main import astronav
 
 class UI(QWidget):
+    buttons_on = True
+    av = astronav()
+
     def __init__(self):
         super().__init__()
 
@@ -39,12 +42,15 @@ class UI(QWidget):
 
         self.takebutton = QPushButton('TAKE')
         layout.addWidget(self.takebutton, 5, 1)
+        self.takebutton.clicked.connect(self.take)
 
         self.evalbutton = QPushButton('EVAL')
         layout.addWidget(self.evalbutton, 5, 2)
+        self.evalbutton.clicked.connect(self.eval)
 
         self.resetbutton = QPushButton('RESET')
         layout.addWidget(self.resetbutton, 5, 3)
+        self.resetbutton.clicked.connect(self.reset)
 
         #QTextEdit - Raw console output
         self.rawconsole = QTextEdit(self)
@@ -75,6 +81,34 @@ class UI(QWidget):
 #                break
 #            self.text_edit.append(data)
 
+        # print line to console
+    def out_line(self, string):
+        self.rawconsole.moveCursor (QTextCursor.End);
+        self.rawconsole.insertPlainText(string);
+
+        # disable buttons during processing
+    def toggle_buttons(self):
+        self.buttons_on = not self.buttons_on
+        self.takebutton.setEnabled(self.buttons_on)
+        self.evalbutton.setEnabled(self.buttons_on)
+        self.resetbutton.setEnabled(self.buttons_on)
+
+    def take(self):
+        # for now does awkward with stuff not plugged in
+        #if self.av.takeFunct():
+        #    self.out_line("Success!\n")
+        #else:
+        #    self.out_line("Failure\n")
+        self.toggle_buttons()
+        return 0
+
+    def eval(self):
+        self.toggle_buttons()
+        return 0
+
+    def reset(self):
+        self.toggle_buttons()
+        return 0
 
 
 class Window(QMainWindow):
@@ -179,3 +213,6 @@ class SpreadsheetModel(QAbstractTableModel):
 #     photo_viewer = PhotoViewer()
 #     photo_viewer.show()
 #     sys.exit(app.exec())
+
+if __name__ == '__main__':
+    showGUI()
